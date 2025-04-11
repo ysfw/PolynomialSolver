@@ -288,7 +288,7 @@ public class SingleLinkedList implements ILinkedList {
             }
         }
         catch (Exception btngan) {
-            System.err.println("Error");
+            System.out.println("Error");
         }        
         scan.close();
     }
