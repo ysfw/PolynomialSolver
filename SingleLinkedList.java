@@ -1,4 +1,3 @@
-import java.security.SignedObject;
 import java.util.Scanner;
 import java.util.regex.*;
 
@@ -40,7 +39,7 @@ public class SingleLinkedList implements ILinkedList {
 
     public void add(int index, Object element) {
         if (!(index >= 0 && index <= size)) {
-            throw new IndexOutOfBoundsException(index);
+            throw new IndexOutOfBoundsException(Integer.toString(index));
         }
         if (index == 0) {
             SNode newNode = new SNode(element, head);
@@ -91,7 +90,7 @@ public class SingleLinkedList implements ILinkedList {
 
     public Object get(int index) {
         if (!(index >= 0 && index < size)) {
-            throw new IndexOutOfBoundsException(index);
+            throw new IndexOutOfBoundsException(Integer.toString(index));
         }
         int i = 0;
         SNode iter = head;
@@ -105,7 +104,7 @@ public class SingleLinkedList implements ILinkedList {
 
     public void set(int index, Object element) {
         if (!(index >= 0 && index < size)) {
-            throw new IndexOutOfBoundsException(index);
+            throw new IndexOutOfBoundsException(Integer.toString(index));
         }
         int i = 0;
         SNode iter = head;
@@ -128,7 +127,7 @@ public class SingleLinkedList implements ILinkedList {
 
     public void remove(int index) {
         if (!(index >= 0 && index < size)) {
-            throw new IndexOutOfBoundsException(index);
+            throw new IndexOutOfBoundsException(Integer.toString(index));
         }
         if (size == 1) {
             size = 0;
@@ -193,10 +192,13 @@ public class SingleLinkedList implements ILinkedList {
     public void printList() {
         System.out.print("[");
         SNode iter;
-        for (iter = head; iter.getNext() != null; iter = iter.getNext()) {
-            System.out.print(iter.getData() + ", ");
+        for (iter = head; iter != null; iter = iter.getNext()) {
+            System.out.print(iter.getData());
+            if (iter.getNext() != null) {
+                System.out.print(", ");
+            }
         }
-        System.out.println(iter.getData() + "]");
+        System.out.println("]");
     }
 
     public static void main(String args[]) {
@@ -206,75 +208,88 @@ public class SingleLinkedList implements ILinkedList {
         Matcher m = lisPattern.matcher(list_input);
         SingleLinkedList list = new SingleLinkedList();
         if (m.matches()) {
-            // System.out.println(m.toString());
             String listString = m.group(1);
-            // System.out.println(listString);
-            for (int i = 0; i < listString.length(); i++) {
-                if (Character.isDigi(listString.charAt(int)))
+            int i = 0;
+            while (i < listString.length()) {
+                String s = "";
+                char character = listString.charAt(i);
+                if (Character.isDigit(character)) {
+                    while (Character.isDigit(character)) {
+                        s += character;
+                        i++;
+                        if (i < listString.length())
+                            character = listString.charAt(i);
+                        else
+                            break;
+                    }
+                    list.add(Integer.parseInt(s));
+                }
+                i++;
             }
-            // System.out.println("Printing list: length = " + list.size());
-            // list.printList();
         }
         String operation = scan.nextLine();
-
-        if (operation.equals("add")) {
-            int data = scan.nextInt();
-            list.add(data);
-        }
-        else if (operation.equals("addToIndex")) {
-            int index = scan.nextInt();
-            int data = scan.nextInt();
-            list.add(index, data);
-            list.printList();
-        }
-        else if (operation.equals("get")) {
-            int index = scan.nextInt();
-            Object data = list.get(index);
-            System.out.println(data);
-        }
-        else if (operation.equals("set")) {
-            int index = scan.nextInt();
-            int data = scan.nextInt();
-            list.set(index, data);
-            list.printList();
-        }
-        else if (operation.equals("clear")) {
-            list.clear();
-        }
-        else if (operation.equals("isEmpty")) {
-            if (list.isEmpty()) {
-                System.out.println("True");
+        try {
+            if (operation.equals("add")) {
+                int data = scan.nextInt();
+                list.add(data);
+                list.printList();
             }
-            else {
-                System.out.println("False");
+            else if (operation.equals("addToIndex")) {
+                int index = scan.nextInt();
+                int data = scan.nextInt();
+                list.add(index, data);
+                list.printList();
             }
-        }
-        else if (operation.equals("remove")) {
-            int index = scan.nextInt();
-            if (index < 0 || index >= list.size()) {
-                System.out.println("Error");
+            else if (operation.equals("get")) {
+                int index = scan.nextInt();
+                Object data = list.get(index);
+                System.out.println(data);
             }
-            else {
+            else if (operation.equals("set")) {
+                int index = scan.nextInt();
+                int data = scan.nextInt();
+                list.set(index, data);
+                list.printList();
+            }
+            else if (operation.equals("clear")) {
+                list.clear();
+                list.printList();
+            }
+            else if (operation.equals("isEmpty")) {
+                if (list.isEmpty()) {
+                    System.out.println("True");
+                }
+                else {
+                    System.out.println("False");
+                }
+            }
+            else if (operation.equals("remove")) {
+                int index = scan.nextInt();
                 list.remove(index);
                 list.printList();
             }
-        }
-        else if (operation.equals("sublist")) {
-            int startIndex = scan.nextInt();
-            int endIndex = scan.nextInt();
-            SingleLinkedList list2 = list.sublist(startIndex, endIndex);
-            list2.printList();
-        }
-        else if (operation.equals("contains")) {
-            int data = scan.nextInt();
-            if (list.contains(data)) {
-                System.out.println("True");
+            else if (operation.equals("sublist")) {
+                int startIndex = scan.nextInt();
+                int endIndex = scan.nextInt();
+                SingleLinkedList list2 = list.sublist(startIndex, endIndex);
+                list2.printList();
             }
-            else {
-                System.out.println("False");
+            else if (operation.equals("contains")) {
+                int data = scan.nextInt();
+                if (list.contains(data)) {
+                    System.out.println("True");
+                }
+                else {
+                    System.out.println("False");
+                }
+            }
+            else if (operation.equals("size")) {
+                System.out.println(list.size());
             }
         }
-
+        catch (Exception btngan) {
+            System.err.println("Error");
+        }        
         scan.close();
     }
 }
