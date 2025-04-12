@@ -1,6 +1,3 @@
-package PolynomialSolver;
-
-import java.util.ArrayList;
 import java.util.Scanner;
 
 class DLLNode {
@@ -41,10 +38,15 @@ class DLLNode {
 }
 
 public class DLL implements ILinkedList {
-    DLLNode head = null;
-    DLLNode tail = head;
+    private DLLNode head = null;
+    private DLLNode tail = head;
     int size = 0;
-
+    public DLLNode getHead(){
+        return head;
+    }
+    public DLLNode getTail(){
+        return tail;
+    }
     public void add(int index, Object element) {
         DLLNode curr = head;
         if (index == 0) {

@@ -1,4 +1,3 @@
-package PolynomialSolver;
 public interface ILinkedList {
     /**
     * Inserts a specified element at the specified position in the list.
