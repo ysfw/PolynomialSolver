@@ -1,5 +1,8 @@
 package PolynomialSolver;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 class DLLNode {
     private Object element;
     private DLLNode next;
@@ -35,7 +38,6 @@ class DLLNode {
         prev = newPrev;
     }
 
-
 }
 
 public class DLL implements ILinkedList {
@@ -45,37 +47,38 @@ public class DLL implements ILinkedList {
 
     public void add(int index, Object element) {
         DLLNode curr = head;
-        if (size >= index && head != null) {
-            for (int i = 0; i < index-1; i++) {
+        if (index == 0) {
+            DLLNode NewNode = new DLLNode(element, head, null);
+            if (curr != null) {
+                curr.setPrev(NewNode);
+            }
+            head = NewNode;
+            size++;
+        } else if (index >=0 && size > index && head != null) {
+            for (int i = 0; i < index - 1; i++) {
                 curr = curr.getNext();
             }
-            DLLNode NewNode = new DLLNode(element,curr.getNext(),curr);
+            DLLNode NewNode = new DLLNode(element, curr.getNext(), curr);
             curr.setNext(NewNode);
             DLLNode nextNode = NewNode.getNext();
             if (nextNode != null) {
                 nextNode.setPrev(NewNode);
             }
             size++;
-        }
-        else if(head==null && size == 0 && index == size) {
-            DLLNode NewNode = new DLLNode(element,null,null);
-            head = NewNode;
-            tail = NewNode;
-            size++;
-        }
-        else{
+        } else if (index > 0 &&index == size) {
+            add(element);
+        } else {
             throw new Error("You Can't add at index " + index + " While The size of the list is " + size);
         }
     }
 
     public void add(Object element) {
         if (head == null) {
-            DLLNode NewNode = new DLLNode(element,null,null);
+            DLLNode NewNode = new DLLNode(element, null, null);
             head = NewNode;
             tail = NewNode;
-        }
-        else{
-            DLLNode NewNode = new DLLNode(element,null,tail);
+        } else {
+            DLLNode NewNode = new DLLNode(element, null, tail);
             tail.setNext(NewNode);
             tail = NewNode;
         }
@@ -85,63 +88,69 @@ public class DLL implements ILinkedList {
 
     public Object get(int index) {
         DLLNode curr = head;
-        if (size > index && head != null) {
+        if (index >=0 && size > index && head != null) {
             for (int i = 0; i < index; i++) {
                 curr = curr.getNext();
             }
             return curr.getElement();
-        }
-        else{
+        } else {
             throw new Error("You Can't get element at index " + index + " While The size of the list is " + size);
         }
     }
 
     public void set(int index, Object element) {
         DLLNode curr = head;
-        if (size > index && head != null) {
+        if (index >=0 && size > index && head != null) {
             for (int i = 0; i < index; i++) {
                 curr = curr.getNext();
             }
             curr.setElement(element);
-        }
-        else{
-            throw new Error("You Can't get element at index " + index + " While The size of the list is " + size);
+        } else {
+            throw new Error("You Can't set element at index " + index + " While The size of the list is " + size);
         }
     }
 
     public void clear() {
         head = null;
-        tail = head;
+        tail = null;
         size = 0;
     }
 
     public boolean isEmpty() {
         if (size == 0) {
             return true;
-        }
-        else return false;
+        } else
+            return false;
     }
 
     public void remove(int index) {
         DLLNode curr = head;
         DLLNode prev = null;
-        if (index ==0) {
-            head = head.getNext();
-            size--;
+        if (head == null) {
+            return;
         }
-        else if (size > index && head != null) {
+        if (index == 0) {
+            head = head.getNext();
+            if (head != null) {
+                head.setPrev(null);
+            }
+            size--;
+        } else if (index >=0 && size > index && head != null) {
             for (int i = 0; i < index; i++) {
                 prev = curr;
                 curr = curr.getNext();
             }
             prev.setNext(curr.getNext());
             curr = curr.getNext();
-            curr.setPrev(prev);
+            if (curr == null) {
+                tail = prev;
+            } else {
+                curr.setPrev(prev);
+            }
             size--;
-        }
-        else{
+        } else {
             throw new Error("You Can't remove element at index " + index + " While The size of the list is " + size);
-        }     
+        }
     }
 
     public int size() {
@@ -149,30 +158,99 @@ public class DLL implements ILinkedList {
     }
 
     public DLL sublist(int fromIndex, int toIndex) {
-        DLL subDll = new DLL();
-        DLLNode curr = head;
-        for (int i = 0; i < fromIndex; i++) {
-            curr = curr.getNext();
+        if (toIndex >=0 && fromIndex >=0 && fromIndex < size && toIndex < size && fromIndex <= toIndex) {
+            DLL subDll = new DLL();
+            DLLNode curr = head;
+            for (int i = 0; i < fromIndex; i++) {
+                curr = curr.getNext();
+            }
+
+            for (int i = fromIndex; i <= toIndex; i++) {
+                subDll.add(curr.getElement());
+                curr = curr.getNext();
+            }
+            return subDll;
+        } else {
+            throw new Error("Can't create sublist");
         }
 
-        for (int i = 0; i < toIndex; i++) {
-            subDll.add(curr.getElement());
-            curr = curr.getNext();
-        }
-        return subDll;
-        
     }
 
     public boolean contains(Object o) {
-        DLLNode curr = head;
-        while (curr != null) {
-            curr = head.getNext();
-            if (curr.getElement() == o) {
+        DLLNode curr1 = head;
+        DLLNode curr2 = tail;
+        while (curr1 != null && curr1 != null && curr2 != curr1.getPrev()) {
+            if (curr1.getElement() == o || curr2.getElement() == o) {
                 return true;
             }
+            curr1 = curr1.getNext();
+            curr2 = curr2.getPrev();
         }
 
-            return false;
+        return false;
     }
 
+
+    public void printList() {
+
+        System.out.print('[');
+        DLLNode curr = head;
+        while (curr != null) {
+            System.out.print(curr.getElement());
+            if (curr.getNext() != null) {
+                System.out.print(", ");
+            }
+            curr = curr.getNext();
+        }
+        System.out.print(']');
+    }
+
+    public static void main(String[] args) {
+        try {
+            Scanner sc = new Scanner(System.in);
+            DLL inputs = new DLL();
+            String sin = sc.nextLine().replaceAll("\\[|\\]", "");
+            String[] stringarr = sin.split(", ");
+            if (!stringarr[0].equals("")) {
+                for (String string : stringarr) {
+                    inputs.add(Integer.parseInt(string));
+                }
+            }
+            String operation = sc.nextLine();
+            if (operation.equals("add")) {
+                inputs.add(sc.nextInt());
+                inputs.printList();
+            } else if (operation.equals("addToIndex")) {
+                inputs.add(sc.nextInt(), sc.nextInt());
+                inputs.printList();
+            } else if (operation.equals("set")) {
+                inputs.set(sc.nextInt(), sc.nextInt());
+                inputs.printList();
+            } else if (operation.equals("clear")) {
+                inputs.clear();
+                inputs.printList();
+            } else if (operation.equals("remove")) {
+                inputs.remove(sc.nextInt());
+                inputs.printList();
+            } else if (operation.equals("isEmpty")) {
+                System.out.println(inputs.isEmpty() ? "True" : "False");
+            } else if (operation.equals("contains")) {
+                System.out.println(inputs.contains(sc.nextInt()) ? "True" : "False");
+            } else if (operation.equals("get")) {
+                System.out.println(inputs.get(sc.nextInt()));
+            } else if (operation.equals("size")) {
+                System.out.println(inputs.size());
+            } else if (operation.equals("sublist")) {
+                DLL sub = inputs.sublist(sc.nextInt(), sc.nextInt());
+                sub.printList();
+            } else {
+                sc.close();
+                throw new Error("Invalid Operation");
+            }
+            sc.close();
+        }
+        catch (Error e) {
+            System.out.println("Error");
+        }  
+}
 }
