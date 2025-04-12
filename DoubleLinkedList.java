@@ -1,90 +1,106 @@
 import java.util.Scanner;
 import java.util.regex.*;
 
-class SNode {
+class DNode {
     private Object data;
-    private SNode next;
+    private DNode next;
+    private DNode prev;
 
-    public SNode(Object number, SNode nextNode) {
-        data = number;
-        next = nextNode;
+    public DNode(Object newData, DNode newNext, DNode newPrev) {
+        data = newData;
+        next = newNext;
+        prev = newPrev;
     }
 
-    public SNode() {
-        data = 0;
-        next = null;
+    public DNode() {
+        data = next = prev = null;
     }
 
     public void setData(Object newData) {
         data = newData;
     }
 
-    public void setNext(SNode nextNode) {
-        next = nextNode;
+    public void setNext(DNode newNext) {
+        next = newNext;
+    }
+
+    public void setPrev(DNode newPrev) {
+        prev = newPrev;
     }
 
     public Object getData() {
         return data;
     }
 
-    public SNode getNext() {
+    public DNode getNext() {
         return next;
+    }
+
+    public DNode getPrev() {
+        return prev;
     }
 }
 
-public class SingleLinkedList implements ILinkedList {
-    private int size = 0;
-    private SNode head = null;
-    private SNode tail = null;
+public class DoubleLinkedList implements ILinkedList {
+    private DNode head;
+    private DNode tail;
+    private int size;
+
+    public DoubleLinkedList() {
+        head = tail = null;
+        size = 0;
+    }
 
     public void add(int index, Object element) {
         if (!(index >= 0 && index <= size)) {
             throw new IndexOutOfBoundsException(Integer.toString(index));
         }
+
         if (index == 0) {
-            SNode newNode = new SNode(element, head);
-            head = newNode;
+            DNode newNode = new DNode(element, head, null);
             if (size == 0) {
-                tail = newNode;
-            }
-        }
-        else if (index == size) {
-            SNode newNode = new SNode(element, null);
-            if (size == 0) {
-                head = newNode;
                 tail = newNode;
             }
             else {
-                tail.setNext(newNode);
-                tail = newNode;
+                head.setPrev(newNode);
             }
+            head = newNode;
+        }
+        else if (index == size) {
+            DNode newNode = new DNode(element, null, tail);
+            if (size == 0) {
+                head = newNode;
+            }
+            else {
+                tail.setNext(newNode);
+            }
+            tail = newNode;
         }
         else {
-            int i = 1;
-            SNode prev = head;
-            SNode iter = head.getNext();
+            int i = 0;
+            DNode iter = head;
             while (i < index) {
-                prev = iter;
                 iter = iter.getNext();
                 i++;
             }
             // after finishing the loop: iter should point to the node at the index specified
-            SNode newNode = new SNode(element, iter);
+            DNode prev = iter.getPrev();
+            DNode newNode = new DNode(element, iter, prev);
             prev.setNext(newNode);
+            iter.setPrev(newNode);
         }
         size++;
     }
 
     public void add(Object element) {
-        SNode newNode = new SNode(element, null);
+        DNode newNode = new DNode(element, null, tail);
         if (size == 0) {
             head = newNode;
-            tail = newNode;
         }
         else {
             tail.setNext(newNode);
-            tail = newNode;
         }
+        tail = newNode;
         size++;
     }
 
@@ -92,8 +108,9 @@ public class SingleLinkedList implements ILinkedList {
         if (!(index >= 0 && index < size)) {
             throw new IndexOutOfBoundsException(Integer.toString(index));
         }
+
         int i = 0;
-        SNode iter = head;
+        DNode iter = head;
         while (i < index) {
             iter = iter.getNext();
             i++;
@@ -106,8 +123,9 @@ public class SingleLinkedList implements ILinkedList {
         if (!(index >= 0 && index < size)) {
             throw new IndexOutOfBoundsException(Integer.toString(index));
         }
+
         int i = 0;
-        SNode iter = head;
+        DNode iter = head;
         while (i < index) {
             iter = iter.getNext();
             i++;
@@ -117,8 +135,8 @@ public class SingleLinkedList implements ILinkedList {
     }
 
     public void clear() {
-        size = 0;
         head = tail = null;
+        size = 0;
     }
 
     public boolean isEmpty() {
@@ -129,47 +147,57 @@ public class SingleLinkedList implements ILinkedList {
         if (!(index >= 0 && index < size)) {
             throw new IndexOutOfBoundsException(Integer.toString(index));
         }
+
         if (size == 1) {
-            size = 0;
-            head = tail = null;
+            head = null;
+            tail = null;
         }
         else {
             if (index == 0) {
-                SNode nextHead = head.getNext();
+                DNode nextHead = head.getNext();
+                nextHead.setPrev(null);
                 head.setNext(null);
                 head = nextHead;
             }
+            else if (index == (size - 1)) {
+                DNode prevTail = tail.getPrev();
+                prevTail.setNext(null);
+                tail.setPrev(null);
+                tail = prevTail;
+            }
             else {
-                int i = 1;
-                SNode prev = head, iter = head.getNext();
+                int i = 0;
+                DNode iter = head;
                 while (i < index) {
-                    prev = iter;
                     iter = iter.getNext();
                     i++;
                 }
                 // after finishing the loop: iter should point to the node at the index specified
-                SNode afterIter = iter.getNext();
+                DNode prev = iter.getPrev();
+                DNode next = iter.getNext();
                 iter.setNext(null);
-                prev.setNext(afterIter);
+                iter.setPrev(null);
+                prev.setNext(next);
+                next.setPrev(prev);
             }
-            size--;
         }
-        
+        size--;
     }
 
     public int size() {
         return size;
     }
 
-    public SingleLinkedList sublist(int fromIndex, int toIndex) {
+    public DoubleLinkedList sublist(int fromIndex, int toIndex) {
         if (!(fromIndex >= 0 && fromIndex < size && toIndex >= fromIndex && toIndex < size)) {
             throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + ", or toIndex: " + toIndex + ", is out of bound");
         }
+
+        DoubleLinkedList list = new DoubleLinkedList();
         int i = 0;
-        SNode iter = head;
-        SingleLinkedList list = new SingleLinkedList();
-        while (i < (toIndex + 1)) {
-            if (i >= fromIndex && i <= toIndex) {
+        DNode iter = head;
+        while (i <= toIndex) {
+            if (i >= fromIndex) {
                 list.add(iter.getData());
             }
             iter = iter.getNext();
@@ -179,41 +207,44 @@ public class SingleLinkedList implements ILinkedList {
     }
 
     public boolean contains(Object o) {
-        SNode iter = head;
-        while (iter != null) {
-            if (o == iter.getData()) {
+        for (DNode iter = head; iter != null; iter = iter.getNext()) {
+            if (iter.getData() == o) {
                 return true;
             }
-            iter = iter.getNext();
         }
         return false;
     }
 
     public void printList() {
         System.out.print("[");
-        SNode iter;
-        for (iter = head; iter != null; iter = iter.getNext()) {
+        DNode iter = head;
+        while (iter != null) {
             System.out.print(iter.getData());
             if (iter.getNext() != null) {
                 System.out.print(", ");
             }
+            iter = iter.getNext();
         }
         System.out.println("]");
     }
 
     public static void main(String args[]) {
         Scanner scan = new Scanner(System.in);
-        String list_input = scan.nextLine();
-        Pattern lisPattern = Pattern.compile("\\[(.*)\\]");
-        Matcher m = lisPattern.matcher(list_input);
-        SingleLinkedList list = new SingleLinkedList();
+        String inputString = scan.nextLine();
+        Pattern p = Pattern.compile("\\[(.*)\\]");
+        Matcher m = p.matcher(inputString);
+
+        DoubleLinkedList list = new DoubleLinkedList();
+
         if (m.matches()) {
             String listString = m.group(1);
+            // System.out.println(listString);
+
             int i = 0;
             while (i < listString.length()) {
-                String s = "";
                 char character = listString.charAt(i);
                 if (Character.isDigit(character)) {
+                    String s = "";
                     while (Character.isDigit(character)) {
                         s += character;
                         i++;
@@ -226,7 +257,10 @@ public class SingleLinkedList implements ILinkedList {
                 }
                 i++;
             }
+            // System.out.println("Printing mylist: length = " + list.size());
+            // list.printList();
         }
+
         String operation = scan.nextLine();
         try {
             if (operation.equals("add")) {
@@ -271,7 +305,7 @@ public class SingleLinkedList implements ILinkedList {
             else if (operation.equals("sublist")) {
                 int startIndex = scan.nextInt();
                 int endIndex = scan.nextInt();
-                SingleLinkedList list2 = list.sublist(startIndex, endIndex);
+                DoubleLinkedList list2 = list.sublist(startIndex, endIndex);
                 list2.printList();
             }
             else if (operation.equals("contains")) {
