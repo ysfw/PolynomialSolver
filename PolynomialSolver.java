@@ -26,8 +26,16 @@ public class PolynomialSolver implements IPolynomialSolver {
         for (int i = 0; i < p.size(); i++) {
             int coefficient = (int) p.get(i);
             int exp = p.size() - i - 1;
-            if (coefficient == 0 && p.size() > 1)
+            if (coefficient == 0 && p.size() > 1) {
+                if (result.endsWith("+")) {
+                    result = result.substring(0, result.length() - 1);
+                }
                 continue;
+            }
+            if (i > 0) {
+                String sign = (coefficient > 0) ? "+" : "";
+                result += sign;
+            }
             String co = (coefficient < 0) ? "-" : "";
             if ((Math.abs(coefficient) != 1 && exp > 0) || exp == 0) {
                 co += Math.abs(coefficient);
@@ -40,10 +48,6 @@ public class PolynomialSolver implements IPolynomialSolver {
                 xPower += "x^" + exp;
             }
             result = result + co + xPower;
-            if (i < p.size() - 1) {
-                String sign = ((int) p.get(i + 1) < 0) ? "" : "+";
-                result += sign;
-            }
         }
         return result;
     }
