@@ -14,7 +14,6 @@ public class PolynomialSolver implements IPolynomialSolver {
         for (int i = 0; i < terms.length; i++) {
             polynomials[poly - 'A'].add(terms[i][1]);
         }
-
     }
 
     public String print(char poly) {
@@ -76,7 +75,7 @@ public class PolynomialSolver implements IPolynomialSolver {
                 exp--;
             }
             DLLNode curr2 = p2.getHead();
-            for (int i = 0; i < p2.size(); i++) {
+            for (int i = index; i < p1.size(); i++) {
                 result[i][0] = exp;
                 result[i][1] = (int) curr1.getElement() + (int) curr2.getElement();
                 curr1 = curr1.getNext();
@@ -94,14 +93,13 @@ public class PolynomialSolver implements IPolynomialSolver {
                 exp--;
             }
             DLLNode curr2 = p1.getHead();
-            for (int i = 0; i < p1.size(); i++) {
+            for (int i = index; i < p2.size(); i++) {
                 result[i][0] = exp;
                 result[i][1] = (int) curr1.getElement() + (int) curr2.getElement();
                 curr1 = curr1.getNext();
                 curr2 = curr2.getNext();
                 exp--;
             }
-
         }
         setPolynomial('D', result);
         while (((int)polynomials[3].getHead().getElement()) == 0 && polynomials[3].size() > 1) {
@@ -111,7 +109,7 @@ public class PolynomialSolver implements IPolynomialSolver {
     }
 
     public int[][] subtract(char poly1, char poly2) {
-        DLL negaDll = polynomials[poly2 - 'A'];
+        DLL negaDll = polynomials[poly2 - 'A'].sublist(0, polynomials[poly2 - 'A'].size() - 1);
         DLLNode curr = negaDll.getHead();
         for (int i = 0; i < negaDll.size(); i++) {
             curr.setElement(((int)curr.getElement()) * -1);
@@ -132,7 +130,7 @@ public class PolynomialSolver implements IPolynomialSolver {
                 exp--;
             }
             DLLNode curr2 = p2.getHead();
-            for (int i = 0; i < p2.size(); i++) {
+            for (int i = index; i < p1.size(); i++) {
                 result[i][0] = exp;
                 result[i][1] = (int) curr1.getElement() + (int) curr2.getElement();
                 curr1 = curr1.getNext();
@@ -150,7 +148,7 @@ public class PolynomialSolver implements IPolynomialSolver {
                 exp--;
             }
             DLLNode curr2 = p1.getHead();
-            for (int i = 0; i < p1.size(); i++) {
+            for (int i = index; i < p2.size(); i++) {
                 result[i][0] = exp;
                 result[i][1] = (int) curr1.getElement() + (int) curr2.getElement();
                 curr1 = curr1.getNext();
@@ -218,7 +216,7 @@ public class PolynomialSolver implements IPolynomialSolver {
                 i = p1.getTail();
             }
         }
-        while ((int) (result.getHead().getElement()) == 0) {
+        while ((int) (result.getHead().getElement()) == 0 && result.size() > 1) {
             result.remove(0);
         }
 
