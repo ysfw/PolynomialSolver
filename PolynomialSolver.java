@@ -317,11 +317,13 @@ public class PolynomialSolver implements IPolynomialSolver {
                     throw new Exception("Invalid Operation");
                 }
             }
-            sc.close();
         }
         catch (Exception | Error e) {
             sc.close();
             System.out.println("Error");
+        }
+        finally {
+            sc.close();
         }
     }
 }
