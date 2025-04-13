@@ -204,7 +204,7 @@ public class DLL implements ILinkedList {
             }
             curr = curr.getNext();
         }
-        System.out.print(']');
+        System.out.println(']');
     }
 
     public static void main(String[] args) {

@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 public class PolynomialSolver implements IPolynomialSolver {
     DLL[] polynomials = new DLL[4];
+
     public PolynomialSolver() {
         for (int i = 0; i < 4; i++) {
             polynomials[i] = new DLL();
@@ -18,11 +19,14 @@ public class PolynomialSolver implements IPolynomialSolver {
     public String print(char poly) {
         String result = "";
         DLL p = polynomials[poly - 'A'];
+        p.printList();
+        System.out.println(p.size());
         for (int i = 0; i < p.size(); i++) {
             int coefficient = (int) p.get(i);
             result = result + coefficient + "X^" + (p.size() - i);
             if (i < p.size() - 1) {
-                result += (coefficient < 0) ? "-" : "+";
+                String sign = (coefficient < 0) ? "-" : "+";
+                result += sign;
             }
         }
         return result;
@@ -47,39 +51,38 @@ public class PolynomialSolver implements IPolynomialSolver {
         DLL p1 = polynomials[poly1 - 'A'];
         DLL p2 = polynomials[poly2 - 'A'];
         int index = Math.abs(p1.size() - p2.size());
-        if (p1.size()> p2.size()) {
-            int exp = p1.size() -1 ;
+        if (p1.size() > p2.size()) {
+            int exp = p1.size() - 1;
             result = new int[p1.size()][2];
-            DLLNode curr1 = p1.getHead(); 
+            DLLNode curr1 = p1.getHead();
             for (int i = 0; i < index; i++) {
-                result[i][0]=exp;
-                result[i][1]=(int)curr1.getElement();
+                result[i][0] = exp;
+                result[i][1] = (int) curr1.getElement();
                 curr1 = curr1.getNext();
                 exp--;
             }
             DLLNode curr2 = p2.getHead();
             for (int i = 0; i < p2.size(); i++) {
-                result[i][0]=exp;
-                result[i][1]=(int)curr1.getElement() + (int)curr2.getElement();
+                result[i][0] = exp;
+                result[i][1] = (int) curr1.getElement() + (int) curr2.getElement();
                 curr1 = curr1.getNext();
                 curr2 = curr2.getNext();
                 exp--;
             }
-        }
-        else{
-            int exp = p2.size() -1 ;
+        } else {
+            int exp = p2.size() - 1;
             result = new int[p2.size()][2];
-            DLLNode curr1 = p2.getHead(); 
+            DLLNode curr1 = p2.getHead();
             for (int i = 0; i < index; i++) {
-                result[i][0]=exp;
-                result[i][1]=(int)curr1.getElement();
+                result[i][0] = exp;
+                result[i][1] = (int) curr1.getElement();
                 curr1 = curr1.getNext();
                 exp--;
             }
             DLLNode curr2 = p1.getHead();
             for (int i = 0; i < p1.size(); i++) {
-                result[i][0]=exp;
-                result[i][1]=(int)curr1.getElement() + (int)curr2.getElement();
+                result[i][0] = exp;
+                result[i][1] = (int) curr1.getElement() + (int) curr2.getElement();
                 curr1 = curr1.getNext();
                 curr2 = curr2.getNext();
                 exp--;
@@ -94,45 +97,44 @@ public class PolynomialSolver implements IPolynomialSolver {
         DLL negaDll = polynomials[poly2 - 'A'];
         DLLNode curr = negaDll.getHead();
         for (int i = 0; i < negaDll.size(); i++) {
-            curr.setElement((int)curr.getElement() * -1);
+            curr.setElement((int) curr.getElement() * -1);
         }
         int[][] result = null;
         DLL p1 = polynomials[poly1 - 'A'];
         DLL p2 = negaDll;
         int index = Math.abs(p1.size() - p2.size());
-        if (p1.size()> p2.size()) {
-            int exp = p1.size() -1 ;
+        if (p1.size() > p2.size()) {
+            int exp = p1.size() - 1;
             result = new int[p1.size()][2];
-            DLLNode curr1 = p1.getHead(); 
+            DLLNode curr1 = p1.getHead();
             for (int i = 0; i < index; i++) {
-                result[i][0]=exp;
-                result[i][1]=(int)curr1.getElement();
+                result[i][0] = exp;
+                result[i][1] = (int) curr1.getElement();
                 curr1 = curr1.getNext();
                 exp--;
             }
             DLLNode curr2 = p2.getHead();
             for (int i = 0; i < p2.size(); i++) {
-                result[i][0]=exp;
-                result[i][1]=(int)curr1.getElement() + (int)curr2.getElement();
+                result[i][0] = exp;
+                result[i][1] = (int) curr1.getElement() + (int) curr2.getElement();
                 curr1 = curr1.getNext();
                 curr2 = curr2.getNext();
                 exp--;
             }
-        }
-        else{
-            int exp = p2.size() -1 ;
+        } else {
+            int exp = p2.size() - 1;
             result = new int[p2.size()][2];
-            DLLNode curr1 = p2.getHead(); 
+            DLLNode curr1 = p2.getHead();
             for (int i = 0; i < index; i++) {
-                result[i][0]=exp;
-                result[i][1]=(int)curr1.getElement();
+                result[i][0] = exp;
+                result[i][1] = (int) curr1.getElement();
                 curr1 = curr1.getNext();
                 exp--;
             }
             DLLNode curr2 = p1.getHead();
             for (int i = 0; i < p1.size(); i++) {
-                result[i][0]=exp;
-                result[i][1]=(int)curr1.getElement() + (int)curr2.getElement();
+                result[i][0] = exp;
+                result[i][1] = (int) curr1.getElement() + (int) curr2.getElement();
                 curr1 = curr1.getNext();
                 curr2 = curr2.getNext();
                 exp--;
@@ -141,7 +143,6 @@ public class PolynomialSolver implements IPolynomialSolver {
         }
         setPolynomial('D', result);
         return result;
-        
 
     }
 
@@ -153,13 +154,12 @@ public class PolynomialSolver implements IPolynomialSolver {
             for (int i = 0; i < diff; i++) {
                 p1.add(0, 0);
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < diff; i++) {
                 p2.add(0, 0);
             }
         }
-        
+
         DLL result = polynomials[3]; // the variable R to store result
         result.clear();
 
@@ -169,12 +169,11 @@ public class PolynomialSolver implements IPolynomialSolver {
         int sum = 0;
         DLLNode lastRef = i;
         while (i != null) {
-            sum += (int)i.getElement() * (int)j.getElement();
+            sum += (int) i.getElement() * (int) j.getElement();
             if (i != p1.getHead()) {
                 i = i.getPrev();
                 j = j.getNext();
-            }
-            else {
+            } else {
                 result.add(sum);
                 sum = 0;
                 i = lastRef.getNext();
@@ -186,12 +185,11 @@ public class PolynomialSolver implements IPolynomialSolver {
         j = p2.getHead().getNext();
         lastRef = j;
         while (j != null) {
-            sum += (int)i.getElement() + (int)j.getElement();
+            sum += (int) i.getElement() + (int) j.getElement();
             if (j != p2.getTail()) {
                 i = i.getPrev();
                 j = j.getNext();
-            }
-            else {
+            } else {
                 result.add(sum);
                 sum = 0;
                 j = lastRef.getNext();
@@ -200,8 +198,7 @@ public class PolynomialSolver implements IPolynomialSolver {
             }
         }
         result.printList(); // debugging
-        while ((int)(result.getHead().getElement()) == 0)
-        {
+        while ((int) (result.getHead().getElement()) == 0) {
             result.remove(0);
         }
         result.printList(); // debugging
@@ -211,49 +208,77 @@ public class PolynomialSolver implements IPolynomialSolver {
         DLLNode curr = result.getHead();
         for (int k = 0; k < length; k++) {
             final_result[k][0] = length - k - 1;
-            final_result[k][1] = (int)curr.getElement();
+            final_result[k][1] = (int) curr.getElement();
             curr = curr.getNext();
         }
+        clearPolynomial(poly2);
+        setPolynomial('D', final_result);
         return final_result;
     }
 
     public static void main(String[] args) {
-        PolynomialSolver solver = new PolynomialSolver();
-        Scanner scan = new Scanner(System.in);
-        String input = scan.nextLine();
-        if (input.equals("set")) {
-            String characteString = scan.nextLine();
-            char poly = characteString.charAt(0);
-            input = scan.nextLine();
-            input = input.replaceAll("\\[|\\]", "");
-            String[] inputList = input.split(", *");
-            int length = inputList.length;
-            int[][] terms = new int[length][2];
-            for (int i = 0; i < length; i++) {
-                terms[i][0] = length - 1 - i;
-                terms[i][1] = Integer.parseInt(inputList[i]);
+        try {
+            PolynomialSolver solver = new PolynomialSolver();
+            Scanner sc = new Scanner(System.in);
+            while (true) {
+                String operation = sc.nextLine();
+                if (operation.equals("set")) {
+                    String characterString = sc.nextLine();
+                    char poly = characterString.charAt(0);
+                    String input = sc.nextLine();
+                    input = input.replaceAll("\\[|\\]", "");
+                    String[] inputList = input.split(", *");
+                    int length = inputList.length;
+                    int[][] terms = new int[length][2];
+                    for (int i = 0; i < length; i++) {
+                        terms[i][0] = length - 1 - i;
+                        terms[i][1] = Integer.parseInt(inputList[i]);
+                    }
+                    solver.setPolynomial(poly, terms);
+                    
+                } else if (operation.equals("print")) {
+                    String characterString = sc.nextLine();
+                    char poly = characterString.charAt(0);
+                    System.out.println(solver.print('D'));
+                } else if (operation.equals("add")) {
+                    String characterString = sc.nextLine();
+                    char poly1 = characterString.charAt(0);
+                    characterString = sc.nextLine();
+                    char poly2 = characterString.charAt(0);
+                    solver.add(poly1, poly2);
+                    System.out.println(solver.print('D'));
+                } else if (operation.equals("sub")) {
+                    String characterString = sc.nextLine();
+                    char poly1 = characterString.charAt(0);
+                    characterString = sc.nextLine();
+                    char poly2 = characterString.charAt(0);
+                    solver.subtract(poly1, poly2);
+                    System.out.println(solver.print('D'));
+                } else if (operation.equals("mult")) {
+                    String characterString = sc.nextLine();
+                    char poly1 = characterString.charAt(0);
+                    characterString = sc.nextLine();
+                    char poly2 = characterString.charAt(0);
+                    solver.multiply(poly1, poly2);
+                    System.out.println(solver.print('D'));
+                } else if (operation.equals("clear")) {
+                    String characterString = sc.nextLine();
+                    char poly = characterString.charAt(0);
+                    solver.clearPolynomial(poly);
+                } else if (operation.equals("eval")) {
+                    String characterString = sc.nextLine();
+                    char poly = characterString.charAt(0);
+                    float a = sc.nextFloat();
+                    System.out.println(solver.evaluatePolynomial(poly, a));
+
+                } else {
+                    throw new Error("Invalid Operation");
+                }
             }
-            solver.setPolynomial(poly, terms);
+            // sc.close();
+        } catch (Error e) {
+            System.out.println("Error");
         }
-        else if (input.equals("print")) {
-            
-        }
-        else if (input.equals("add")) {
-            
-        }
-        else if (input.equals("sub")) {
-            
-        }
-        else if (input.equals("mult")) {
-            
-        }
-        else if (input.equals("clear")) {
-            
-        }
-        else if (input.equals("eval")) {
-            
-        }
-        
-        scan.close();
+
     }
 }
