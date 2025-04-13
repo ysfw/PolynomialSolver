@@ -10,6 +10,7 @@ public class PolynomialSolver implements IPolynomialSolver {
     }
 
     public void setPolynomial(char poly, int[][] terms) {
+        polynomials[poly - 'A'].clear();
         for (int i = 0; i < terms.length; i++) {
             polynomials[poly - 'A'].add(terms[i][1]);
         }
@@ -19,13 +20,25 @@ public class PolynomialSolver implements IPolynomialSolver {
     public String print(char poly) {
         String result = "";
         DLL p = polynomials[poly - 'A'];
-        p.printList();
-        System.out.println(p.size());
         for (int i = 0; i < p.size(); i++) {
             int coefficient = (int) p.get(i);
-            result = result + coefficient + "X^" + (p.size() - i);
+            int exp = p.size() - i - 1;
+            if (coefficient == 0 && p.size() > 1)
+                continue;
+            String co = (coefficient < 0) ? "-" : "";
+            if ((Math.abs(coefficient) != 1 && exp > 0) || exp == 0) {
+                co += Math.abs(coefficient);
+            }
+            String xPower = "";
+            if (exp == 1) {
+                xPower += "x";
+            }
+            else if (exp > 1) {
+                xPower += "x^" + exp;
+            }
+            result = result + co + xPower;
             if (i < p.size() - 1) {
-                String sign = (coefficient < 0) ? "-" : "+";
+                String sign = ((int) p.get(i + 1) < 0) ? "" : "+";
                 result += sign;
             }
         }
@@ -34,6 +47,7 @@ public class PolynomialSolver implements IPolynomialSolver {
 
     public void clearPolynomial(char poly) {
         polynomials[poly - 'A'].clear();
+        polynomials[poly - 'A'].printList();
     }
 
     public float evaluatePolynomial(char poly, float value) {
@@ -41,7 +55,7 @@ public class PolynomialSolver implements IPolynomialSolver {
         float result = 0;
         for (int i = 0; i < p.size(); i++) {
             int coefficient = (int) p.get(i);
-            result += (float) (coefficient * Math.pow(value, (p.size() - i)));
+            result += (float) (coefficient * Math.pow(value, (p.size() - i - 1)));
         }
         return result;
     }
@@ -90,6 +104,9 @@ public class PolynomialSolver implements IPolynomialSolver {
 
         }
         setPolynomial('D', result);
+        while (((int)polynomials[3].getHead().getElement()) == 0 && polynomials[3].size() > 1) {
+            polynomials[3].remove(0);
+        }
         return result;
     }
 
@@ -97,7 +114,8 @@ public class PolynomialSolver implements IPolynomialSolver {
         DLL negaDll = polynomials[poly2 - 'A'];
         DLLNode curr = negaDll.getHead();
         for (int i = 0; i < negaDll.size(); i++) {
-            curr.setElement((int) curr.getElement() * -1);
+            curr.setElement(((int)curr.getElement()) * -1);
+            curr = curr.getNext();
         }
         int[][] result = null;
         DLL p1 = polynomials[poly1 - 'A'];
@@ -142,6 +160,9 @@ public class PolynomialSolver implements IPolynomialSolver {
 
         }
         setPolynomial('D', result);
+        while (((int)polynomials[3].getHead().getElement()) == 0 && polynomials[3].size() > 1) {
+            polynomials[3].remove(0);
+        }
         return result;
 
     }
@@ -185,7 +206,7 @@ public class PolynomialSolver implements IPolynomialSolver {
         j = p2.getHead().getNext();
         lastRef = j;
         while (j != null) {
-            sum += (int) i.getElement() + (int) j.getElement();
+            sum += (int) i.getElement() * (int) j.getElement();
             if (j != p2.getTail()) {
                 i = i.getPrev();
                 j = j.getNext();
@@ -194,14 +215,12 @@ public class PolynomialSolver implements IPolynomialSolver {
                 sum = 0;
                 j = lastRef.getNext();
                 lastRef = lastRef.getNext();
-                i = p2.getTail();
+                i = p1.getTail();
             }
         }
-        result.printList(); // debugging
         while ((int) (result.getHead().getElement()) == 0) {
             result.remove(0);
         }
-        result.printList(); // debugging
 
         int length = result.size();
         int[][] final_result = new int[length][2];
@@ -211,16 +230,15 @@ public class PolynomialSolver implements IPolynomialSolver {
             final_result[k][1] = (int) curr.getElement();
             curr = curr.getNext();
         }
-        clearPolynomial(poly2);
         setPolynomial('D', final_result);
         return final_result;
     }
 
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
         try {
             PolynomialSolver solver = new PolynomialSolver();
-            Scanner sc = new Scanner(System.in);
-            while (true) {
+            while (sc.hasNextLine()) {
                 String operation = sc.nextLine();
                 if (operation.equals("set")) {
                     String characterString = sc.nextLine();
@@ -235,50 +253,57 @@ public class PolynomialSolver implements IPolynomialSolver {
                         terms[i][1] = Integer.parseInt(inputList[i]);
                     }
                     solver.setPolynomial(poly, terms);
-                    
-                } else if (operation.equals("print")) {
+                }
+                else if (operation.equals("print")) {
                     String characterString = sc.nextLine();
                     char poly = characterString.charAt(0);
-                    System.out.println(solver.print('D'));
-                } else if (operation.equals("add")) {
+                    System.out.println(solver.print(poly));
+                }
+                else if (operation.equals("add")) {
                     String characterString = sc.nextLine();
                     char poly1 = characterString.charAt(0);
                     characterString = sc.nextLine();
                     char poly2 = characterString.charAt(0);
                     solver.add(poly1, poly2);
                     System.out.println(solver.print('D'));
-                } else if (operation.equals("sub")) {
+                }
+                else if (operation.equals("sub")) {
                     String characterString = sc.nextLine();
                     char poly1 = characterString.charAt(0);
                     characterString = sc.nextLine();
                     char poly2 = characterString.charAt(0);
                     solver.subtract(poly1, poly2);
                     System.out.println(solver.print('D'));
-                } else if (operation.equals("mult")) {
+                }
+                else if (operation.equals("mult")) {
                     String characterString = sc.nextLine();
                     char poly1 = characterString.charAt(0);
                     characterString = sc.nextLine();
                     char poly2 = characterString.charAt(0);
                     solver.multiply(poly1, poly2);
                     System.out.println(solver.print('D'));
-                } else if (operation.equals("clear")) {
+                }
+                else if (operation.equals("clear")) {
                     String characterString = sc.nextLine();
                     char poly = characterString.charAt(0);
                     solver.clearPolynomial(poly);
-                } else if (operation.equals("eval")) {
+                }
+                else if (operation.equals("eval")) {
                     String characterString = sc.nextLine();
                     char poly = characterString.charAt(0);
-                    float a = sc.nextFloat();
-                    System.out.println(solver.evaluatePolynomial(poly, a));
-
-                } else {
-                    throw new Error("Invalid Operation");
+                    float a = Float.parseFloat(sc.nextLine());
+                    float result = solver.evaluatePolynomial(poly, a);
+                    System.out.println(Math.round(result));
+                }
+                else {
+                    throw new Exception("Invalid Operation");
                 }
             }
-            // sc.close();
-        } catch (Error e) {
+            sc.close();
+        }
+        catch (Exception e) {
+            sc.close();
             System.out.println("Error");
         }
-
     }
 }
