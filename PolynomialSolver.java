@@ -25,7 +25,7 @@ public class PolynomialSolver implements IPolynomialSolver {
             if (coefficient == 0 && p.size() > 1)
                 continue;
             String co = (coefficient < 0) ? "-" : "";
-            if ((Math.abs(coefficient) != 1 && exp > 0) || exp == 0) {
+            if ((coefficient != 1 && exp > 0) || exp == 0) {
                 co += Math.abs(coefficient);
             }
             String xPower = "";
