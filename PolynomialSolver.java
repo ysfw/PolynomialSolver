@@ -10,20 +10,32 @@ public class PolynomialSolver implements IPolynomialSolver {
     }
 
     public void setPolynomial(char poly, int[][] terms) {
-        polynomials[poly - 'A'].clear();
+        DLL p = polynomials[poly - 'A'];
+        p.clear();
         for (int i = 0; i < terms.length; i++) {
-            polynomials[poly - 'A'].add(terms[i][1]);
+            p.add(terms[i][1]);
         }
     }
 
     public String print(char poly) {
         String result = "";
         DLL p = polynomials[poly - 'A'];
+        if (p.size() == 0) {
+            throw new Error("Invalid Operation with clear polynomial");
+        }
         for (int i = 0; i < p.size(); i++) {
             int coefficient = (int) p.get(i);
             int exp = p.size() - i - 1;
-            if (coefficient == 0 && p.size() > 1)
+            if (coefficient == 0 && p.size() > 1) {
+                if (result.endsWith("+")) {
+                    result = result.substring(0, result.length() - 1);
+                }
                 continue;
+            }
+            if (i > 0) {
+                String sign = (coefficient > 0) ? "+" : "";
+                result += sign;
+            }
             String co = (coefficient < 0) ? "-" : "";
             if ((coefficient != 1 && exp > 0) || exp == 0) {
                 co += Math.abs(coefficient);
@@ -36,21 +48,24 @@ public class PolynomialSolver implements IPolynomialSolver {
                 xPower += "x^" + exp;
             }
             result = result + co + xPower;
-            if (i < p.size() - 1) {
-                String sign = ((int) p.get(i + 1) < 0) ? "" : "+";
-                result += sign;
-            }
         }
         return result;
     }
 
     public void clearPolynomial(char poly) {
-        polynomials[poly - 'A'].clear();
-        polynomials[poly - 'A'].printList();
+        DLL p = polynomials[poly - 'A'];
+        if (p.size() == 0) {
+            throw new Error("Invalid Operation with clear polynomial");
+        }
+        p.clear();
+        p.printList();
     }
 
     public float evaluatePolynomial(char poly, float value) {
         DLL p = polynomials[poly - 'A'];
+        if (p.size() == 0) {
+            throw new Error("Invalid Operation with clear polynomial");
+        }
         float result = 0;
         for (int i = 0; i < p.size(); i++) {
             int coefficient = (int) p.get(i);
@@ -63,6 +78,9 @@ public class PolynomialSolver implements IPolynomialSolver {
         int[][] result = null;
         DLL p1 = polynomials[poly1 - 'A'];
         DLL p2 = polynomials[poly2 - 'A'];
+        if (p1.size() == 0 || p2.size() == 0) {
+            throw new Error("Invalid Operation with clear polynomial");
+        }
         int index = Math.abs(p1.size() - p2.size());
         if (p1.size() > p2.size()) {
             int exp = p1.size() - 1;
@@ -118,6 +136,9 @@ public class PolynomialSolver implements IPolynomialSolver {
         int[][] result = null;
         DLL p1 = polynomials[poly1 - 'A'];
         DLL p2 = negaDll;
+        if (p1.size() == 0 || p2.size() == 0) {
+            throw new Error("Invalid Operation with clear polynomial");
+        }
         int index = Math.abs(p1.size() - p2.size());
         if (p1.size() > p2.size()) {
             int exp = p1.size() - 1;
@@ -168,6 +189,9 @@ public class PolynomialSolver implements IPolynomialSolver {
     public int[][] multiply(char poly1, char poly2) {
         DLL p1 = polynomials[poly1 - 'A'];
         DLL p2 = polynomials[poly2 - 'A'];
+        if (p1.size() == 0 || p2.size() == 0) {
+            throw new Error("Invalid Operation with clear polynomial");
+        }
         int diff = Math.abs(p1.size() - p2.size());
         if (p1.size() < p2.size()) {
             for (int i = 0; i < diff; i++) {
@@ -297,11 +321,13 @@ public class PolynomialSolver implements IPolynomialSolver {
                     throw new Exception("Invalid Operation");
                 }
             }
-            sc.close();
         }
-        catch (Exception e) {
+        catch (Exception | Error e) {
             sc.close();
             System.out.println("Error");
+        }
+        finally {
+            sc.close();
         }
     }
 }
